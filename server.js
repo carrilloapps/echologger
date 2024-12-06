@@ -15,6 +15,9 @@ const logger = winston.createLogger({
   transports: [new winston.transports.Console()],
 });
 
+app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
+
 app.use(
   morgan((tokens, req, res) => {
     const logDetails = {
@@ -35,10 +38,7 @@ app.use(
   })
 );
 
-app.use(express.json());
-app.use(express.urlencoded({ extended: true }));
-
-app.get('/', (req, res) => {
+app.all('/', (req, res) => {
   res.send('Server is running');
 });
 
