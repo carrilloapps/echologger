@@ -4,12 +4,13 @@
     "description": "A simple HTTP server that logs incoming requests",
     "main": "server.js",
     "dependencies": {
-      "express": "^4.18.2"
+        "express": "^4.18.2",
+        "morgan": "^1.10.0",
+        "winston": "^3.17.0"
     },
     "scripts": {
-      "start": "node server.js"
+        "start": "node server.js"
     },
     "author": "",
     "license": "ISC"
-  }
-  
+}

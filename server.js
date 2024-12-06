@@ -1,31 +1,46 @@
 const express = require('express');
+const morgan = require('morgan');
+const winston = require('winston');
 const app = express();
 const port = 3000;
 
-// Middleware para parsear el cuerpo de la solicitud
+const logger = winston.createLogger({
+  level: 'info',
+  format: winston.format.printf(({ message }) => {
+    if (typeof message === 'object') {
+      return `Request ${JSON.stringify(message, null, 2)}`;
+    }
+    return message;
+  }),
+  transports: [new winston.transports.Console()],
+});
+
+app.use(
+  morgan((tokens, req, res) => {
+    const logDetails = {
+      request: {
+        method: req.method,
+        url: req.url,
+        headers: req.headers,
+        query: req.query,
+        body: req.body,
+        ip: req.ip,
+        status: tokens.status(req, res),
+        responseTime: `${tokens['response-time'](req, res)} ms`,
+      },
+    };
+    logger.info(logDetails);
+    return null;
+  })
+);
+
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
-// Middleware para registrar todas las solicitudes
-app.use((req, res, next) => {
-  console.log(`[${new Date().toISOString()}] ${req.method} ${req.url}`);
-  console.log('Headers:', req.headers);
-  if (req.body && Object.keys(req.body).length) {
-    console.log('Body:', req.body);
-  }
-  next();
-});
-
-// Ruta para manejar solicitudes POST
-app.post('/log', (req, res) => {
-  res.send('Data logged');
-});
-
-// Ruta para manejar solicitudes GET
 app.get('/', (req, res) => {
   res.send('Server is running');
 });
 
 app.listen(port, () => {
-  console.log(`Server running at http://localhost:${port}`);
+  logger.info({ message: `Server running at http://localhost:${port}` });
 });
