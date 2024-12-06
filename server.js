@@ -19,6 +19,7 @@ app.use(
   morgan((tokens, req, res) => {
     const logDetails = {
       request: {
+        timestamp: tokens.date(req, res, 'iso'),
         method: req.method,
         url: req.url,
         headers: req.headers,
